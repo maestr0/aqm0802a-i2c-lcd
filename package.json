@@ -2,7 +2,7 @@
   "name": "aqm0802a-i2c-lcd",
   "version": "0.1.0",
   "description": "use the aqm0802a 8x2 LCD display with the i2c bus on the raspberry pi",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "mocha"
   },
@@ -21,5 +21,17 @@
   "bugs": {
     "url": "https://github.com/saraf/aqm0802a-i2c-lcd/issues"
   },
-  "homepage": "https://github.com/saraf/aqm0802a-i2c-lcd#readme"
+  "homepage": "https://github.com/saraf/aqm0802a-i2c-lcd#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "i2c": "^0.2.1",
+    "mocha": "^2.3.3",
+    "verror": "^1.6.0"
+  },
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "chai-as-promised": "^5.1.0",
+    "proxyquire": "^1.7.2",
+    "sinon": "^1.17.1"
+  }
 }
