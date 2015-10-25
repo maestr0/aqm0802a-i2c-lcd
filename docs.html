@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>aqm0802a-i2c-lcd by saraf</title>
+</head>
+
+<body>
+<div id="container">
+    <div class="inner">
+
+        <header>
+            <h1>aqm0802a-i2c-lcd</h1>
+
+            <h2>Use the aqm0802a 8x2 LCD display in your node.js projects on the raspberry pi</h2>
+        </header>
+
+        <section>
+            <a href="index.html">Home</a> |
+            <a class="disabled">First steps</a> |
+            <a href="conceptual-overview-of-the-display.html">Conceptual overview of the display</a> |
+            <a href="using-the-npm-module.html">NPM module docs</a>
+        </section>
+        <br>
+        <section id="main_content">
+
+            <h2>
+                <a id="first-steps-with-the-aqm0802a" class="anchor" href="#first-steps-with-the-aqm0802a"
+                   aria-hidden="true">
+                    <span class="octicon octicon-link"></span></a>
+                First steps with the aqm0802a LCD breakout module</h2>
+
+            <h4>Preparing your raspberry pi</h4>
+
+            <p>
+                I am assuming that you are using the Raspbian Jessie image and the raspberry pi model 2 B.
+                First, make sure that the i2c kernel module is enabled and is loaded. You can do this using<br>
+                <code>sudo raspi-config</code> <br>
+                -&gt; going to Advanced Options <br>
+                -&gt; Enable I2C kernel module <br>
+                -&gt; Answer yes to "Would you like the ARM I2C interface to be enabled<br>
+                -&gt; Answer yes to "Would you like the I2C kernel module to be loaded by default"
+            </p>
+
+            <p>
+                Next ensure that you have the i2c-tools package installed, else install it using<br>
+                <code>sudo apt-get install i2c-tools</code>
+            </p>
+
+            <h4>Connecting the aqm0802a based LCD module to the board</h4>
+
+            <p>
+                Connect the display to the raspberry pi header pins as follows:<br>
+                <img src="images/connect-display.png"><br>
+                (Note: the display module is hot pluggable - you can plug it in even when the raspberry pi is turned
+                on.)
+            </p>
+
+            <h4>The i2cdetect command - can the pi find the LCD module</h4>
+
+            <p>
+                Use the i2cdetect tool to detect the address of the LCD module and to make sure that the raspberry
+                pi is able to find the display on the i2c bus.
+            </p>
+
+            <h4>First find the name of the i2c bus device using the following command:</h4>
+
+            <p><code>sudo i2cdetect -l</code></p>
+            <img src="images/detect%20bus%20device.PNG"><br>
+
+            <p>
+                Here we see that the device is named i2c-1. The part of this name that we want to use is the number
+                at the end - in this case, '1'.
+            </p>
+
+            <p>
+                Next use that number with the i2cdetect command to scan the i2c bus:<br>
+
+                <code> sudo i2cdetect -y 1</code><br>
+                (The -y switch makes the command run in non-interactive mode)
+            </p>
+
+            <p>
+                <img src="images/detect-display-address.png"><br>
+                Here we see that the bus has been scanned - all 128 addresses (the first three and the last eight seem
+                to be reserved addresses)<br>
+                and that the display has been detected at address 3e.
+            </p>
+
+            <h4>Initializing the display using i2cset</h4>
+
+            <p>
+                Next, use the i2cset command to send the initialization sequence to the display.
+            </p>
+
+            <p>
+                <code>
+                    sudo i2cset -y 1 0x3e 0x00 0x38 0x39 0x14 0x70 0x56 0x6c i
+                </code><br>
+                <code>
+                    sudo i2cset -y 1 0x3e 0x00 0x38 0x0d 0x01 i
+                </code>
+            </p>
+
+            <p>
+                i2cset is a small helper command to set registers visible through the I2C bus.<br>
+                In the above commands: the first "1" is for the bus number: <br>
+            <ul style="padding-left: 30px">
+                <li>the first "1" is for the bus number</li>
+                <li> the 0x3e is for the address of our display on the bus</li>
+                <li>the '0x00' is for the address on the display to write to (when we are sending commands to the
+                    display, it seems that we need to write to 0x00)
+                </li>
+                <li>all the numbers between the 0x00 and the i in the end are the values to be written - the actual
+                    initialization commands.
+                </li>
+                <li>and the last 'i' is the mode parameter that specifies that we want to do a i2c block write.</li>
+            </ul>
+            </p>
+
+            <p>
+                This should give you a blinking cursor on the display.
+            </p>
+
+            <h4>Next, let us try writing something to the screen.</h4>
+            After having initialized the display, type in the following i2cset commands to write some text:
+
+            <p>
+                <code>sudo i2cset -y 1 0x3e 0x40 0x48 0x65 0x6c 0x6c 0x6f i</code>
+            </p>
+
+            <p>
+                This will write the characters Hello to the first line of the display.<br>
+                Refer to the datasheet <a href="http://akizukidenshi.com/download/ds/xiamen/AQM0802.pdf"
+                                          title="http://akizukidenshi.com/download/ds/xiamen/AQM0802.pdf" class="http">http://akizukidenshi.com/download/ds/xiamen/AQM0802.pdf</a><br>
+                (which is in japanese, but the table of characters should be easy to understand if you compare the
+                row and column numbers with the data written in the above command (H - 0x48, e - 0x65, l - 0x6c, l -
+                0x6c, o - 0x6f))
+            </p>
+
+            <p>
+                Next, move the cursor to the second line - <br>
+
+                <code>sudo i2cset -y 1 0x3e 0x00 0xc0 i</code>
+            </p>
+
+            <p>
+                And write the next line of text -<br>
+
+                <code>sudo i2cset -y 1 0x3e 0x40 0x57 0x6f 0x72 0x6c 0x64 i</code>
+            </p>
+
+            <p>
+                This should give you a "Hello World" display:<br>
+                <img src="images/hello-world.png">
+            </p>
+
+            <p>
+                Next clear the display with the following command:<br>
+                <code>sudo i2cset -y 1 0x3e 0x00 0x01</code>
+            </p>
+
+            <h4>This concludes the instructions for getting started with the LCD display on your Raspberry Pi.</h4>
+            <br>
+        </section>
+
+        <footer>
+            qqm0802a-i2c-lcd is maintained by <a href="https://github.com/saraf">saraf</a><br>
+            This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.
+            Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+
+    </div>
+</div>
+</body>
+</html>

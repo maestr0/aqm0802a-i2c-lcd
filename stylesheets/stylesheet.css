@@ -248,7 +248,8 @@ h2 {
   margin-bottom: 8px;
   font-size: 22px;
   font-weight: bold;
-  color: #303030;
+  /*color: #303030;*/
+  color: #d5000d;
 }
 
 h3 {
@@ -335,6 +336,9 @@ footer a:hover {
   content: '.';
 }
 
+.disabled {
+  color: #888888;
+}
 .clearfix {display: inline-block;}
 * html .clearfix {height: 1%;}
 .clearfix {display: block;}
