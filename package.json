@@ -1,14 +1,14 @@
 {
   "name": "aqm0802a-i2c-lcd",
-  "version": "1.0.1",
-  "description": "use the aqm0802a 8x2 LCD display with the i2c bus on the raspberry pi",
+  "version": "2.0.0",
+  "description": "use the Grove - LCD RGB Backlight aqm0802a 8x2 LCD display with the i2c bus on the raspberry pi",
   "main": "lib/index.js",
   "scripts": {
     "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/saraf/aqm0802a-i2c-lcd.git"
+    "url": "git@github.com:maestr0/aqm0802a-i2c-lcd.git"
   },
   "keywords": [
     "aqm0802a",
